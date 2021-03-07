@@ -1,9 +1,7 @@
-FROM node:12.4.0-alpine
+FROM node:12.14.1
 
-WORKDIR /app/household
+WORKDIR /app/front
 
-RUN apk update && \
-    npm install -g npm && \
-    npm install -g @vue/cli@3.4.0
+RUN npm install -g @vue/cli create-nuxt-app
 
-CMD ["/bin/ash"]
+CMD ["/bin/sh"]

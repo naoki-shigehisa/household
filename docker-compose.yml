@@ -1,20 +1,19 @@
 version: '3'
 services:
-  # front:
-  #   image: node:12.4.0-alpine
-  #   container_name: freee-front
-  #   build: ./front
-  #   ports:
-  #     - 8080:8080
-  #     - 8000:8000
-  #   volumes:
-  #     - ./front:/app
-  #   stdin_open: true
-  #   privileged: true
-  #   tty: true
-  #   command: npm run serve 
-  #   environment:
-  #     VUE_APP_API: http://localhost
+  front:
+    container_name: front
+    build: ./front
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app/
+    tty: true
+    stdin_open: true
+    command: npm run dev
+    environment:
+      - VUE_APP_URL=0.0.0.0
+    networks:
+      - proxy
 
   db:
     image: mysql:5.7
@@ -30,11 +29,13 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - proxy
 
   api:
     build: ./api
     ports:
-      - "80:3000"
+      - "3000:3000"
     volumes:
       - ./api:/myapp
     command: bundle exec rails s -p 3000 -b '0.0.0.0'
@@ -50,9 +51,14 @@ services:
       - AUTH0_MANAGE_AUDIENCE=https://household.auth0.com/api/v2/
       - AUTH0_CONNECTION=household
       - AUTH0_SECRET_KEY=pquh7alwZytMhasiCIl_WnPCfv-Yy1GyCox6o8WCeKSK6xgJu2m96HPdiZFwLuyZ
-
     links:
       - db
     tty: true
     stdin_open: true
     privileged: true
+    networks:
+      - proxy
+  
+networks:
+  proxy:
+    external: true
